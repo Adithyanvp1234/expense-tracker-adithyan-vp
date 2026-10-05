@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A simple expense tracker to manage your income and expenses.">
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ========== HEADER ========== -->
+  <header class="app-header">
+    <div class="container">
+      <h1 class="app-title">Expense Tracker</h1>
+      <p class="app-subtitle">Track your income and expenses in one place</p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ========== DASHBOARD / SUMMARY CARDS ========== -->
+    <section class="dashboard" id="dashboard" aria-labelledby="dashboard-heading">
+      <h2 id="dashboard-heading" class="section-title">Dashboard</h2>
+
+      <div class="summary-cards">
+        <article class="card card-income" id="income-card">
+          <h3 class="card-title">Total Income</h3>
+          <p class="card-amount" id="total-income">0.00</p>
+        </article>
+
+        <article class="card card-expense" id="expense-card">
+          <h3 class="card-title">Total Expenses</h3>
+          <p class="card-amount" id="total-expenses">0.00</p>
+        </article>
+
+        <article class="card card-balance" id="balance-card">
+          <h3 class="card-title">Current Balance</h3>
+          <p class="card-amount" id="current-balance">0.00</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== ADD / EDIT TRANSACTION FORM ========== -->
+    <section class="form-section" id="form-section" aria-labelledby="form-heading">
+      <h2 id="form-heading" class="section-title">Add Transaction</h2>
+
+      <form id="transaction-form" class="transaction-form" novalidate="false">
+
+        <!-- Hidden field used by JavaScript to track which transaction is being edited -->
+        <input type="hidden" id="transaction-id" name="transactionId">
+
+        <div class="form-grid">
+
+          <!-- Transaction Type -->
+          <fieldset class="form-group form-group-type">
+            <legend>Transaction Type</legend>
+            <div class="radio-group">
+              <label for="type-income" class="radio-label">
+                <input type="radio" id="type-income" name="type" value="income" required checked>
+                Income
+              </label>
+              <label for="type-expense" class="radio-label">
+                <input type="radio" id="type-expense" name="type" value="expense" required>
+                Expense
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Amount -->
+          <div class="form-group">
+            <label for="amount">Amount</label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              min="0.01"
+              step="0.01"
+              placeholder="e.g. 250.00"
+              required
+            >
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="" disabled selected>Select a category</option>
+              <option value="salary">Salary</option>
+              <option value="freelance">Freelance</option>
+              <option value="food">Food</option>
+              <option value="transport">Transport</option>
+              <option value="shopping">Shopping</option>
+              <option value="bills">Bills</option>
+              <option value="entertainment">Entertainment</option>
+              <option value="health">Health</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group form-group-full">
+            <label for="description">Description</label>
+            <input
+              type="text"
+              id="description"
+              name="description"
+              maxlength="100"
+              placeholder="e.g. Grocery shopping"
+              required
+            >
+          </div>
+
+        </div>
+
+        <!-- Form Buttons -->
+        <div class="form-actions">
+          <button type="submit" id="submit-btn" class="btn btn-primary">Add Transaction</button>
+          <button type="button" id="cancel-edit-btn" class="btn btn-secondary" hidden>Cancel Edit</button>
+          <button type="reset" id="reset-btn" class="btn btn-secondary">Clear Form</button>
+        </div>
+
+        <!-- Area for JavaScript to show form messages -->
+        <p id="form-message" class="form-message" role="alert" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- ========== FILTER CONTROLS ========== -->
+    <section class="filter-section" id="filter-section" aria-labelledby="filter-heading">
+      <h2 id="filter-heading" class="section-title">Filter Transactions</h2>
+
+      <div class="filter-controls">
+
+        <div class="form-group">
+          <label for="filter-type">Type</label>
+          <select id="filter-type" name="filterType">
+            <option value="all" selected>All Transactions</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="filter-category">Category</label>
+          <select id="filter-category" name="filterCategory">
+            <option value="all" selected>All Categories</option>
+            <option value="salary">Salary</option>
+            <option value="freelance">Freelance</option>
+            <option value="food">Food</option>
+            <option value="transport">Transport</option>
+            <option value="shopping">Shopping</option>
+            <option value="bills">Bills</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="health">Health</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group filter-actions">
+          <button type="button" id="clear-filters-btn" class="btn btn-secondary">Reset Filters</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========== TRANSACTION LIST ========== -->
+    <section class="transactions-section" id="transactions-section" aria-labelledby="transactions-heading">
+      <h2 id="transactions-heading" class="section-title">Transactions</h2>
+
+      <!-- Empty state: JavaScript will show/hide this -->
+      <div id="empty-state" class="empty-state">
+        <p>No transactions yet. Add your first income or expense above!</p>
+      </div>
+
+      <!-- Wrapper allows the table to scroll horizontally on small screens -->
+      <div class="table-wrapper" id="table-wrapper">
+        <table class="transaction-table" id="transaction-table">
+          <caption class="visually-hidden">List of income and expense transactions</caption>
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Description</th>
+              <th scope="col">Category</th>
+              <th scope="col">Type</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+
+          <!-- JavaScript will insert transaction rows here -->
+          <tbody id="transaction-list">
+
+            <!--
+              Example of a row JavaScript will generate later:
+
+              <tr class="transaction-row" data-id="123">
+                <td class="transaction-date">2026-10-05</td>
+                <td class="transaction-description">Grocery shopping</td>
+                <td class="transaction-category">Food</td>
+                <td class="transaction-type">Expense</td>
+                <td class="transaction-amount">45.00</td>
+                <td class="transaction-actions">
+                  <button type="button" class="btn btn-edit" data-id="123">Edit</button>
+                  <button type="button" class="btn btn-delete" data-id="123">Delete</button>
+                </td>
+              </tr>
+            -->
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="app-footer">
+    <div class="container">
+      <p>&copy; 2026 Expense Tracker. Built with HTML, CSS, and JavaScript.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
